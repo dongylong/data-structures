@@ -29,9 +29,9 @@ public class SeparateCHainingHashTable<T> {
     public void insert(T t) {
         //5-10
         List<T> whichList = theLists[myHash(t)];
-        if(!whichList.contains(t)){
+        if (!whichList.contains(t)) {
             whichList.add(t);
-            if(++currentSize >theLists.length){
+            if (++currentSize > theLists.length) {
                 rehash();
             }
         }
@@ -41,7 +41,7 @@ public class SeparateCHainingHashTable<T> {
     public void remove(T t) {
         //5-10
         List<T> whichList = theLists[myHash(t)];
-        if(whichList.contains(t)){
+        if (whichList.contains(t)) {
             whichList.remove(t);
             currentSize--;
         }
@@ -63,6 +63,18 @@ public class SeparateCHainingHashTable<T> {
 
     public void rehash() {
         //5-22
+        List<T>[] oldLists = theLists;
+        theLists = new List[nextPrime(2 * oldLists.length)];
+        for (int i = 0; i < oldLists.length; i++) {
+            theLists[i] = new LinkedList<T>();
+        }
+        //copy table over
+        currentSize = 0;
+        for (int i = 0; i < oldLists.length; i++) {
+            for (T item : oldLists[i]) {
+                insert(item);
+            }
+        }
 
     }
 

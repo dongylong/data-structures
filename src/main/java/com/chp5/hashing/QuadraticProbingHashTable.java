@@ -68,6 +68,7 @@ public class QuadraticProbingHashTable<T> {
 
     /**
      * Find an item in the hash table
+     *
      * @param t the item to search for
      * @return the matching item
      */
@@ -79,6 +80,7 @@ public class QuadraticProbingHashTable<T> {
 
     /**
      * Insert into the hash table. If the item is already present ,do nothing
+     *
      * @param t the item to insert
      */
     public void insert(T t) {
@@ -87,32 +89,34 @@ public class QuadraticProbingHashTable<T> {
          * Insert x as active
          */
         int currentPos = findPos(t);
-        if(isActive(currentPos)){
+        if (isActive(currentPos)) {
             return;
         }
-        array[currentPos] = new HashEntry<T>(t,true);
+        array[currentPos] = new HashEntry<T>(t, true);
         /**
          * rehash 5.5
          */
-        if(currentSize > array.length/2){
+        if (currentSize > array.length / 2) {
             rehash();
         }
     }
 
     /**
      * remove from the hash table
+     *
      * @param t the item to remove
      */
     public void remove(T t) {
         //5.17
         int currentPos = findPos(t);
-        if(isActive(currentPos)){
+        if (isActive(currentPos)) {
             array[currentPos].isActive = false;
         }
     }
 
     /**
      * Internal method to allocate array
+     *
      * @param arraySize the size of the array
      */
     private void allocateArray(int arraySize) {
@@ -122,38 +126,52 @@ public class QuadraticProbingHashTable<T> {
 
     /**
      * Return true if currentPos exitst and is active
+     *
      * @param currentPos
      * @return
      */
     private boolean isActive(int currentPos) {
         //5.16
-        return array[currentPos]!=null && array[currentPos].isActive;
+        return array[currentPos] != null && array[currentPos].isActive;
     }
 
     /**
      * Method that performs quadratic probing resolution in half-empty table.
+     *
      * @param t the item to search for
      * @return the position where the search terminates
      */
     private int findPos(T t) {
         //5.16
-        int offset =1;
+        int offset = 1;
         int currentPos = myhash(t);
-        while (array[currentPos]!=null && !array[currentPos].element.equals(t)){
+        while (array[currentPos] != null && !array[currentPos].element.equals(t)) {
             /**
              * compute ith probe
              */
-            currentPos +=offset;
-            offset+=2;
-            if(currentPos>= array.length){
-                currentPos-= array.length;
+            currentPos += offset;
+            offset += 2;
+            if (currentPos >= array.length) {
+                currentPos -= array.length;
             }
         }
         return currentPos;
     }
 
+    /**
+     * Rehashing for quadratic probing hash table.
+     */
     private void rehash() {
         //5.22
+        HashEntry<T>[] oldArray = array;
+        //create a new double-sized empty table
+        allocateArray(nextPrime(2 * oldArray.length));
+        currentSize=0;
+        for (int i = 0; i < oldArray.length; i++) {
+            if(oldArray[i]!=null&&oldArray[i].isActive){
+                insert(oldArray[i].element);
+            }
+        }
     }
 
     private int myhash(T t) {
